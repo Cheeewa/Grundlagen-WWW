@@ -1,2 +1,2 @@
 # Grundlagen-WWW
-finance tracking application for module "Grundlagen des Word-Wide-Web"
+finance tracking web application for module "Grundlagen des Word-Wide-Web"
