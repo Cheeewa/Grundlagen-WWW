@@ -14,13 +14,11 @@ import TypedSvg.Types exposing (AnchorAlignment(..), Paint(..), Transform(..), e
 
 w : Float
 w =
-    990
-
+    330
 
 h : Float
 h =
-    504
-
+    100
 
 colors : Array Color
 colors =
@@ -28,36 +26,28 @@ colors =
         [ Color.rgb255 152 171 198
         , Color.rgb255 138 137 166
         , Color.rgb255 123 104 136
-        , Color.rgb255 107 72 107
-        , Color.rgb255 159 92 85
-        , Color.rgb255 208 116 60
-        , Color.rgb255 255 96 0
         ]
-
 
 radius : Float
 radius =
     min w h / 2
 
-
 pieSlice : Int -> Shape.Arc -> Svg msg
 pieSlice index datum =
     Path.element (Shape.arc datum) [ fill <| Paint <| Maybe.withDefault Color.black <| Array.get index colors, stroke <| Paint Color.white ]
-
 
 pieLabel : Shape.Arc -> ( String, Float ) -> Svg msg
 pieLabel slice ( label, _ ) =
     let
         ( x, y ) =
-            Shape.centroid { slice | innerRadius = radius - 40, outerRadius = radius - 40 }
+            Shape.centroid { slice | innerRadius = radius - 15, outerRadius = radius - 20 }
     in
     text_
         [ transform [ Translate x y ]
-        , dy (em 0.35)
+        , dy (em 0.05)
         , textAnchor AnchorMiddle
         ]
         [ text label ]
-
 
 view : List ( String, Float ) -> Svg msg
 view model =
@@ -72,18 +62,12 @@ view model =
             ]
         ]
 
-
 data : List ( String, Float )
 data =
-    [ ( "/notifications", 2704659 )
-    , ( "/about", 4499890 )
-    , ( "/product", 2159981 )
-    , ( "/blog", 3853788 )
-    , ( "/shop", 14106543 )
-    , ( "/profile", 8819342 )
-    , ( "/", 612463 )
+    [ ( "Budget", 50 )
+    , ( "Spent", 50 )
+    , ( "minus", 10)
     ]
-
 
 main : Svg msg
 main =

@@ -1,0 +1,42 @@
+css
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    color: #333;
+}
+
+form {
+    margin-bottom: 2em;
+}
+
+input {
+    display: block;
+    margin-bottom: 1em;
+    padding: 0.5em;
+}
+
+button {
+    background-color: #008CBA;
+    border: none;
+    color: white;
+    padding: 0.5em 1em;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1em;
+    margin: 0.5em 0;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #f8f8f8;
+    padding: 0.5em;
+    margin-bottom: 1em;
+}
