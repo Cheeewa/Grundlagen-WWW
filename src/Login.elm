@@ -36,7 +36,7 @@ update msg model =
             if model.username == "admin" && model.password == "admin" then
                 { model | isLoggedIn = True }
             else
-                model
+                model --dann unverändert
         Logout ->
             { model | isLoggedIn = False }
 
