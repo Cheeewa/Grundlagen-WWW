@@ -4,7 +4,9 @@ import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import PieChart exposing (main)
+import PieChart
+import Login
+
 
 type alias Expense =
     { description : String
