@@ -13,7 +13,6 @@ import List.Extra exposing (last)
 
 -- MAIN
 
-
 main : Program () Model Msg
 main =
   Browser.application
@@ -26,10 +25,13 @@ main =
     }
 
 
+
 type alias Expense =
     { description : String
     , amount : Int
     }
+
+
 type alias Model =
     { expenses : List Expense
     , budget : Int
@@ -40,6 +42,8 @@ type alias Model =
     , key : Nav.Key
     , url : Url.Url
     }
+
+
 type Msg
     = AddExpense
     | AddBudget
@@ -169,22 +173,25 @@ viewLink path =
   li [] [ a [ href path ] [ text path ] ]
 
 viewInput : String -> String -> (String -> Msg) -> Html Msg
-viewInput p v toMsg = 
+viewInput p v toMsg =
     input [ placeholder p, value v, onInput toMsg ] []
+
 
 expenseView : Expense -> Html msg
 expenseView expense =
     li []
-        [ text ( descriptionFill expense.description ++ ": " ++ String.fromInt expense.amount)
+        [ text ( descriptionFill expense.description ++ ": " ++ String.fromInt expense.amount )
         ]
+
 
 descriptionFill : String -> String
 descriptionFill description =
     case description of
         "" ->
             "unknown"
-        _ -> 
+        _ ->
             description
+
 
 
 -- SUBSCRIPTIONS
@@ -192,4 +199,7 @@ descriptionFill description =
 subscriptions : Model -> Sub Msg
 subscriptions model =
   Sub.none
+
+
+    
 
