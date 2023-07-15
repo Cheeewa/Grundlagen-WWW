@@ -1,4 +1,4 @@
-module PieChart exposing (main)
+module PieChart exposing ( update)
 
 
 import Array exposing (Array)
@@ -10,7 +10,7 @@ import TypedSvg.Attributes exposing (dy, fill, stroke, textAnchor, transform, vi
 --import TypedSvg.Attributes.InPx exposing (height, width)
 import TypedSvg.Core exposing (Svg, text)
 import TypedSvg.Types exposing (AnchorAlignment(..), Paint(..), Transform(..), em)
-
+import Login exposing (Msg)
 
 w : Float
 w =
@@ -62,15 +62,6 @@ view model =
             ]
         ]
 
-data : List ( String, Float )
-data =
-    [ ( "Budget", 50 )
-    , ( "Spent", 50 )
-    , ( "minus", 10)
-    ]
-
-
-
-main : Svg msg
-main =
-    view data
+update : List ( String, Float ) -> Svg msg
+update pieData = 
+    view pieData

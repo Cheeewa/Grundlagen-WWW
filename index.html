@@ -5217,8 +5217,8 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$application = _Browser_application;
 var $author$project$Main$Model = F8(
-	function (expenses, budget, balance, newExpenseDescription, newExpenseAmount, newBudget, key, url) {
-		return {balance: balance, budget: budget, expenses: expenses, key: key, newBudget: newBudget, newExpenseAmount: newExpenseAmount, newExpenseDescription: newExpenseDescription, url: url};
+	function (expenses, budget, spent, newExpenseDescription, newExpenseAmount, newBudget, key, url) {
+		return {budget: budget, expenses: expenses, key: key, newBudget: newBudget, newExpenseAmount: newExpenseAmount, newExpenseDescription: newExpenseDescription, spent: spent, url: url};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
@@ -5292,7 +5292,7 @@ var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
 			case 'AddExpense':
-				var oldbalance = model.balance;
+				var oldSpent = model.spent;
 				var newamount = A2(
 					$elm$core$Maybe$withDefault,
 					0,
@@ -5301,17 +5301,16 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							balance: oldbalance - newamount,
 							expenses: A2(
 								$elm$core$List$cons,
 								{amount: newamount, description: model.newExpenseDescription},
 								model.expenses),
 							newExpenseAmount: '',
-							newExpenseDescription: ''
+							newExpenseDescription: '',
+							spent: oldSpent - newamount
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'AddBudget':
-				var oldbalance = model.balance;
 				var newbudget = A2(
 					$elm$core$Maybe$withDefault,
 					0,
@@ -5319,7 +5318,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{balance: oldbalance + newbudget, budget: model.budget + newbudget, newBudget: ''}),
+						{budget: model.budget + newbudget, newBudget: ''}),
 					$elm$core$Platform$Cmd$none);
 			case 'NewExpenseDescription':
 				var description = msg.a;
@@ -5405,12 +5404,128 @@ var $author$project$Main$expenseView = function (expense) {
 var $elm$html$Html$form = _VirtualDom_node('form');
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$img = _VirtualDom_node('img');
-var $author$project$PieChart$data = _List_fromArray(
-	[
-		_Utils_Tuple2('Budget', 50),
-		_Utils_Tuple2('Spent', 50),
-		_Utils_Tuple2('minus', 10)
-	]);
+var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
+	return _Utils_Tuple2(msg, true);
+};
+var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
+	return {$: 'MayPreventDefault', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$preventDefaultOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
+	});
+var $elm$html$Html$Events$onSubmit = function (msg) {
+	return A2(
+		$elm$html$Html$Events$preventDefaultOn,
+		'submit',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysPreventDefault,
+			$elm$json$Json$Decode$succeed(msg)));
+};
+var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $elm$html$Html$Attributes$stringProperty = F2(
+	function (key, string) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$string(string));
+	});
+var $elm$html$Html$Attributes$src = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'src',
+		_VirtualDom_noJavaScriptOrHtmlUri(url));
+};
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$ul = _VirtualDom_node('ul');
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$Events$alwaysStop = function (x) {
+	return _Utils_Tuple2(x, true);
+};
+var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
+	return {$: 'MayStopPropagation', a: a};
+};
+var $elm$html$Html$Events$stopPropagationOn = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $elm$html$Html$Events$targetValue = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'value']),
+	$elm$json$Json$Decode$string);
+var $elm$html$Html$Events$onInput = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$stopPropagationOn,
+		'input',
+		A2(
+			$elm$json$Json$Decode$map,
+			$elm$html$Html$Events$alwaysStop,
+			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
+};
+var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
+var $author$project$Main$viewInput = F3(
+	function (p, v, toMsg) {
+		return A2(
+			$elm$html$Html$input,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$placeholder(p),
+					$elm$html$Html$Attributes$value(v),
+					$elm$html$Html$Events$onInput(toMsg)
+				]),
+			_List_Nil);
+	});
+var $elm$html$Html$a = _VirtualDom_node('a');
+var $elm$html$Html$Attributes$href = function (url) {
+	return A2(
+		$elm$html$Html$Attributes$stringProperty,
+		'href',
+		_VirtualDom_noJavaScriptUri(url));
+};
+var $author$project$Main$viewLink = function (path) {
+	return A2(
+		$elm$html$Html$li,
+		_List_Nil,
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$href(path)
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(path)
+					]))
+			]));
+};
+var $elm$core$String$fromFloat = _String_fromNumber;
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
+var $author$project$Main$showLabel = F2(
+	function (balance, text) {
+		return (!balance) ? '' : text;
+	});
 var $elm_community$typed_svg$TypedSvg$Types$Translate = F2(
 	function (a, b) {
 		return {$: 'Translate', a: a, b: b};
@@ -5428,9 +5543,6 @@ var $elm$virtual_dom$VirtualDom$nodeNS = F2(
 var $elm_community$typed_svg$TypedSvg$Core$node = $elm$virtual_dom$VirtualDom$nodeNS('http://www.w3.org/2000/svg');
 var $elm_community$typed_svg$TypedSvg$g = $elm_community$typed_svg$TypedSvg$Core$node('g');
 var $author$project$PieChart$h = 100;
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
 var $elm$core$Basics$abs = function (n) {
 	return (n < 0) ? (-n) : n;
 };
@@ -5750,7 +5862,6 @@ var $elm$virtual_dom$VirtualDom$attribute = F2(
 			_VirtualDom_noJavaScriptOrHtmlUri(value));
 	});
 var $elm_community$typed_svg$TypedSvg$Core$attribute = $elm$virtual_dom$VirtualDom$attribute;
-var $elm$core$String$fromFloat = _String_fromNumber;
 var $elm_community$typed_svg$TypedSvg$TypesToStrings$lengthToString = function (length) {
 	switch (length.$) {
 		case 'Cm':
@@ -7758,134 +7869,34 @@ var $author$project$PieChart$view = function (model) {
 					]))
 			]));
 };
-var $author$project$PieChart$main = $author$project$PieChart$view($author$project$PieChart$data);
-var $elm$html$Html$Events$alwaysPreventDefault = function (msg) {
-	return _Utils_Tuple2(msg, true);
+var $author$project$PieChart$update = function (pieData) {
+	return $author$project$PieChart$view(pieData);
 };
-var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
-	return {$: 'MayPreventDefault', a: a};
-};
-var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
-var $elm$html$Html$Events$preventDefaultOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
-	});
-var $elm$html$Html$Events$onSubmit = function (msg) {
-	return A2(
-		$elm$html$Html$Events$preventDefaultOn,
-		'submit',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysPreventDefault,
-			$elm$json$Json$Decode$succeed(msg)));
-};
-var $elm$html$Html$p = _VirtualDom_node('p');
-var $elm$json$Json$Encode$string = _Json_wrap;
-var $elm$html$Html$Attributes$stringProperty = F2(
-	function (key, string) {
-		return A2(
-			_VirtualDom_property,
-			key,
-			$elm$json$Json$Encode$string(string));
-	});
-var $elm$html$Html$Attributes$src = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'src',
-		_VirtualDom_noJavaScriptOrHtmlUri(url));
-};
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
-var $elm$html$Html$ul = _VirtualDom_node('ul');
-var $elm$html$Html$input = _VirtualDom_node('input');
-var $elm$html$Html$Events$alwaysStop = function (x) {
-	return _Utils_Tuple2(x, true);
-};
-var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
-};
-var $elm$html$Html$Events$stopPropagationOn = F2(
-	function (event, decoder) {
-		return A2(
-			$elm$virtual_dom$VirtualDom$on,
-			event,
-			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
-	});
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $elm$json$Json$Decode$at = F2(
-	function (fields, decoder) {
-		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
-	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
-var $elm$html$Html$Events$targetValue = A2(
-	$elm$json$Json$Decode$at,
-	_List_fromArray(
-		['target', 'value']),
-	$elm$json$Json$Decode$string);
-var $elm$html$Html$Events$onInput = function (tagger) {
-	return A2(
-		$elm$html$Html$Events$stopPropagationOn,
-		'input',
-		A2(
-			$elm$json$Json$Decode$map,
-			$elm$html$Html$Events$alwaysStop,
-			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
-};
-var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
-var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
-var $author$project$Main$viewInput = F3(
-	function (p, v, toMsg) {
-		return A2(
-			$elm$html$Html$input,
+var $author$project$Main$viewPieChart = F3(
+	function (budget, spent, minus) {
+		var spentdata = -spent;
+		var balancedata = budget + spent;
+		return $author$project$PieChart$update(
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$placeholder(p),
-					$elm$html$Html$Attributes$value(v),
-					$elm$html$Html$Events$onInput(toMsg)
-				]),
-			_List_Nil);
+					_Utils_Tuple2(
+					_Utils_ap(
+						A2($author$project$Main$showLabel, balancedata, ' Balance: '),
+						$elm$core$String$fromFloat(balancedata)),
+					balancedata),
+					_Utils_Tuple2(
+					_Utils_ap(
+						A2($author$project$Main$showLabel, spentdata, ' Spent:'),
+						$elm$core$String$fromFloat(spentdata)),
+					spentdata),
+					_Utils_Tuple2('', minus)
+				]));
 	});
-var $elm$html$Html$a = _VirtualDom_node('a');
-var $elm$html$Html$Attributes$href = function (url) {
-	return A2(
-		$elm$html$Html$Attributes$stringProperty,
-		'href',
-		_VirtualDom_noJavaScriptUri(url));
-};
-var $author$project$Main$viewLink = function (path) {
-	return A2(
-		$elm$html$Html$li,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$a,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$href(path)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text(path)
-					]))
-			]));
-};
 var $author$project$Main$view = function (model) {
 	return {
 		body: _List_fromArray(
 			[
-				$elm$html$Html$text('The current URL is: '),
-				A2(
-				$elm$html$Html$b,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$url$Url$toString(model.url))
-					])),
+				A2($elm$html$Html$b, _List_Nil, _List_Nil),
 				A2(
 				$elm$html$Html$ul,
 				_List_Nil,
@@ -7932,7 +7943,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$text(
-										'BUDGET : ' + ($elm$core$String$fromInt(model.budget) + (' € BALANCE : ' + ($elm$core$String$fromInt(model.balance) + '€'))))
+										'BUDGET : ' + ($elm$core$String$fromInt(model.budget) + (' € BALANCE : ' + ($elm$core$String$fromInt(model.budget + model.spent) + '€'))))
 									])),
 								A2(
 								$elm$html$Html$form,
@@ -8010,7 +8021,7 @@ var $author$project$Main$view = function (model) {
 										A2($elm$html$Html$Attributes$style, 'padding', '0.5')
 									]),
 								A2($elm$core$List$map, $author$project$Main$expenseView, model.expenses)),
-								$author$project$PieChart$main
+								A3($author$project$Main$viewPieChart, model.budget, model.spent, 0)
 							]))
 					]))
 			]),

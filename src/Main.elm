@@ -6,9 +6,10 @@ import Html exposing (Html, div, h1, text, ul, input, li, button, a, b, br, p, i
 import Url exposing (Url)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import PieChart
+import PieChart exposing ( update)
 import Login
 import List.Extra exposing (last)
+import TypedSvg.Core exposing (Svg, text)
 
 
 -- MAIN
@@ -35,7 +36,7 @@ type alias Expense =
 type alias Model =
     { expenses : List Expense
     , budget : Int
-    , balance : Int
+    , spent : Int
     , newExpenseDescription : String
     , newExpenseAmount : String
     , newBudget : String
@@ -65,7 +66,7 @@ update msg model =
     AddExpense -> 
         let
             newamount = Maybe.withDefault 0 (String.toInt model.newExpenseAmount)
-            oldbalance = model.balance 
+            oldSpent = model.spent 
         in
         
             ({ model | expenses =
@@ -74,18 +75,16 @@ update msg model =
             :: model.expenses
             , newExpenseDescription = ""
             , newExpenseAmount = ""
-            , balance = oldbalance - newamount
+            , spent = oldSpent - newamount
             }, Cmd.none)
 
     AddBudget -> 
         let 
-            oldbalance = model.balance
             newbudget = Maybe.withDefault 0 (String.toInt model.newBudget)
          in
             ({ model | budget =
             model.budget + newbudget
             , newBudget = ""
-            , balance = oldbalance + newbudget
             }, Cmd.none)
 
     NewExpenseDescription description ->
@@ -114,8 +113,8 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Budget Tracking App"
     , body = 
-        [ text "The current URL is: "
-        , b [] [ text (Url.toString model.url) ]
+        [ 
+         b [] [  ] --Html.text (Url.toString model.url)
         , ul []
             [ viewLink "/home"
             , viewLink "/history"
@@ -125,12 +124,12 @@ view model =
                   [ img [ src "assets/icon1.png"
                   , style "max-height" "20px"
                       ] []
-                  ,text "BUDGET TRACKER" ]
+                  ,Html.text "BUDGET TRACKER" ]
                   ,p [ style "text-align" "center"
                      , style "font-size" "24px"
                      , style "font-weight" "bold"
                      , style "color" "black"]
-                     [text ( "BUDGET : " ++ String.fromInt model.budget ++" € BALANCE : " ++ String.fromInt model.balance ++ "€")
+                     [Html.text ( "BUDGET : " ++ String.fromInt model.budget ++" € BALANCE : " ++ String.fromInt (model.budget + model.spent) ++ "€")
                      ]
                  , Html.form [ onSubmit AddBudget ]
                     [ div [ style "text-align" "center"]
@@ -138,7 +137,7 @@ view model =
                             ,  button [style "color" "#FFF3E2"
                                       ,style "background-color" "#F97B22"
                                       , style "font-weight" "bold"]
-                            [ text "Add Budget" ]
+                            [ Html.text "Add Budget" ]
                         ]
                     ]
                  , br[] []
@@ -146,12 +145,12 @@ view model =
                     [ div [style "text-align" "center"
                             ]
                         [ viewInput "Description" model.newExpenseDescription NewExpenseDescription
-                        , text " "
+                        , Html.text " "
                         , viewInput "Amount" model.newExpenseAmount NewExpenseAmount
                         , button [style "color" "#FFF3E2"
                                  ,style "background-color" "#F97B22"
                                  ,style "font-weight" "bold"]
-                                 [ text "Add Expense" ]
+                                 [ Html.text "Add Expense" ]
                         ]
                     ]
                     , ul [style "color" "grey"
@@ -161,16 +160,32 @@ view model =
                         ,style "padding" "0.5"
                         ]
                         (List.map expenseView model.expenses)
-                    , PieChart.main
+                    , viewPieChart model.budget model.spent 0
                 ]
             ]
         ]
     }
-    
+
+
+viewPieChart : Int -> Int -> Int -> Svg msg
+viewPieChart budget spent minus = 
+    let balancedata = toFloat (budget + spent)
+        spentdata = toFloat -spent
+        
+    in
+    PieChart.update [ ( showLabel balancedata " Balance: " ++ String.fromFloat balancedata, balancedata )
+                    , ( showLabel spentdata " Spent:" ++ String.fromFloat spentdata , spentdata )
+                    , ( "", toFloat minus )
+                    ]
+
+showLabel : Float -> String -> String
+showLabel balance text =
+    if balance == 0 then ""
+    else text
 
 viewLink : String -> Html msg
 viewLink path =
-  li [] [ a [ href path ] [ text path ] ]
+  li [] [ a [ href path ] [ Html.text path ] ]
 
 viewInput : String -> String -> (String -> Msg) -> Html Msg
 viewInput p v toMsg =
@@ -180,7 +195,7 @@ viewInput p v toMsg =
 expenseView : Expense -> Html msg
 expenseView expense =
     li []
-        [ text ( descriptionFill expense.description ++ ": " ++ String.fromInt expense.amount )
+        [ Html.text ( descriptionFill expense.description ++ ": " ++ String.fromInt expense.amount )
         ]
 
 
@@ -191,7 +206,6 @@ descriptionFill description =
             "unknown"
         _ ->
             description
-
 
 
 -- SUBSCRIPTIONS
