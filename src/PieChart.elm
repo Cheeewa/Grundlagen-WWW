@@ -10,7 +10,8 @@ import TypedSvg.Attributes exposing (dy, fill, stroke, textAnchor, transform, vi
 --import TypedSvg.Attributes.InPx exposing (height, width)
 import TypedSvg.Core exposing (Svg, text)
 import TypedSvg.Types exposing (AnchorAlignment(..), Paint(..), Transform(..), em)
-import Login exposing (Msg)
+import Dict exposing (size)
+import TypedSvg exposing (style)
 
 w : Float
 w =
@@ -44,7 +45,7 @@ pieLabel slice ( label, _ ) =
     in
     text_
         [ transform [ Translate x y ]
-        , dy (em 0.05)
+        , dy (em 0.5)
         , textAnchor AnchorMiddle
         ]
         [ text label ]
